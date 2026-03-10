@@ -1,4 +1,5 @@
 import { Droplets } from "lucide-react";
+import NewsletterSignup from "./NewsletterSignup";
 
 const Footer = () => (
   <footer className="bg-foreground text-background py-12 sm:py-16">
@@ -32,6 +33,9 @@ const Footer = () => (
           </div>
         ))}
       </div>
+
+      <NewsletterSignup />
+
       <div className="border-t border-background/10 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
         <p className="text-background/40 text-sm">© 2026 PuraVida Water Pvt. Ltd. All rights reserved.</p>
         <p className="text-background/40 text-sm">Made with 💧 in India</p>
