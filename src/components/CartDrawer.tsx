@@ -1,10 +1,26 @@
 import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const CartDrawer = () => {
   const { items, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, totalPrice, clearCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   if (!isCartOpen) return null;
+
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    if (!isAuthenticated) {
+      toast({ title: "Please login first", description: "Sign in to proceed with checkout." });
+      navigate("/login");
+    } else {
+      navigate("/checkout");
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50" onClick={() => setIsCartOpen(false)}>
@@ -13,7 +29,6 @@ const CartDrawer = () => {
         className="absolute top-0 right-0 h-full w-full max-w-md bg-background shadow-2xl animate-slide-in-right flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-border">
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-primary" />
@@ -24,7 +39,6 @@ const CartDrawer = () => {
           </button>
         </div>
 
-        {/* Items */}
         <div className="flex-1 overflow-y-auto p-5">
           {items.length === 0 ? (
             <div className="text-center py-16">
@@ -36,7 +50,7 @@ const CartDrawer = () => {
             <div className="space-y-4">
               {items.map((item) => (
                 <div key={item.product.id} className="flex gap-4 p-3 rounded-xl glass-card-solid">
-                  <img src={item.product.image} alt={item.product.name} className="w-16 h-20 object-contain rounded-lg bg-secondary p-1" />
+                  <img src={item.product.image} alt={item.product.name} className="w-16 h-20 object-contain rounded-lg bg-secondary p-1" loading="lazy" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-sm text-foreground truncate">{item.product.name}</h3>
                     <p className="text-xs text-muted-foreground">{item.product.size}</p>
@@ -60,14 +74,14 @@ const CartDrawer = () => {
           )}
         </div>
 
-        {/* Footer */}
         {items.length > 0 && (
           <div className="border-t border-border p-5 space-y-4">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground font-medium">Total</span>
               <span className="text-2xl font-display font-bold text-foreground">₹{totalPrice}</span>
             </div>
-            <button className="w-full water-gradient text-primary-foreground py-3.5 rounded-xl font-semibold btn-ripple hover:opacity-90 transition-opacity">
+            <button onClick={handleCheckout}
+              className="w-full water-gradient text-primary-foreground py-3.5 rounded-xl font-semibold btn-ripple hover:opacity-90 transition-opacity">
               Proceed to Checkout
             </button>
             <button onClick={clearCart} className="w-full text-sm text-muted-foreground hover:text-destructive transition-colors">
